@@ -68,15 +68,15 @@ Phx.vista.Movimiento=Ext.extend(Phx.gridInterfaz,{
 				name: 'estado_reg',
 				fieldLabel: 'Estado Reg.',
 				inputType:'hidden',
-				allowBlank: true,
-				anchor: '80%',
-				gwidth: 100,
-				maxLength:10
+				//allowBlank: true,
+				//anchor: '80%',
+				//gwidth: 100,
+				//maxLength:10
 			},
 				type:'TextField',
-				filters:{pfiltro:'mov.estado_reg',type:'string'},
-				id_grupo:1,
-				grid:true,
+				//filters:{pfiltro:'mov.estado_reg',type:'string'},
+				//id_grupo:1,
+				//grid:true,
 				form:false
 		},
 		{
