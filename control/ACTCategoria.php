@@ -39,6 +39,11 @@ class ACTCategoria extends ACTbase{
 		$this->res=$this->objFunc->eliminarCategoria($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+		function siguienteEstadoSalee(){
+		$this->objFunc=$this->create('MODTienda');	
+		$this->res=$this->objFunc->siguienteEstadoSalee($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}		
 			
 }
 

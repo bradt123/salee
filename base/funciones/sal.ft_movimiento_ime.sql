@@ -1,8 +1,3 @@
-CREATE OR REPLACE FUNCTION "sal"."ft_movimiento_ime" (	
-				p_administrador integer, p_id_usuario integer, p_tabla character varying, p_transaccion character varying)
-RETURNS character varying AS
-$BODY$
-
 /**************************************************************************
  SISTEMA:		Salee
  FUNCION: 		sal.ft_movimiento_ime
@@ -25,7 +20,8 @@ DECLARE
 	v_resp		            varchar;
 	v_nombre_funcion        text;
 	v_mensaje_error         text;
-	v_id_movimiento	integer;
+	v_id_movimiento			integer;
+    v_registros 			record;
 			    
 BEGIN
 
@@ -69,6 +65,18 @@ BEGIN
 			
 			
 			)RETURNING id_movimiento into v_id_movimiento;
+            
+             --funcion aumentada
+            IF(v_parametros.tipo = 'Entrada')THEN
+            	update sal.tproducto set
+                	stock = stock + v_parametros.cantidad_movimiento
+                where id_producto = v_parametros.id_producto;
+        	ELSE
+            	update sal.tproducto set
+                	stock = stock - v_parametros.cantidad_movimiento
+                where id_producto = v_parametros.id_producto;
+            END IF;
+			--
 			
 			--Definicion de la respuesta
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Movimiento almacenado(a) con exito (id_movimiento'||v_id_movimiento||')'); 
@@ -89,6 +97,16 @@ BEGIN
 	elsif(p_transaccion='SAL_MOV_MOD')then
 
 		begin
+        --aumentado con la funcion 
+           select 
+            	id_producto,
+                cantidad_movimiento,
+                tipo
+        	into 
+            	v_registros
+            from sal.tmovimiento
+            where id_movimiento = v_parametros.id_movimiento;
+            
 			--Sentencia de la modificacion
 			update sal.tmovimiento set
 			cantidad_movimiento = v_parametros.cantidad_movimiento,
@@ -104,6 +122,17 @@ BEGIN
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Movimiento modificado(a)'); 
             v_resp = pxp.f_agrega_clave(v_resp,'id_movimiento',v_parametros.id_movimiento::varchar);
                
+            
+            --funcion aumentada
+            IF(v_registros.tipo = 'Entrada')THEN
+            	update sal.tproducto set
+            		stock = stock - v_registros.cantidad_movimiento + v_parametros.cantidad_movimiento
+                where id_producto = v_registros.id_producto;
+            ELSE
+            	update sal.tproducto set
+                	stock = stock + v_registros.cantidad_movimiento - v_parametros.cantidad_movimiento
+                where id_producto = v_registros.id_producto;
+            END IF;
             --Devuelve la respuesta
             return v_resp;
             
@@ -119,6 +148,16 @@ BEGIN
 	elsif(p_transaccion='SAL_MOV_ELI')then
 
 		begin
+        --aumentado con la funcion 
+            select 
+            	id_producto,
+                cantidad_movimiento,
+                tipo
+        	into 
+            	v_registros
+            from sal.tmovimiento
+            where id_movimiento = v_parametros.id_movimiento;
+            
 			--Sentencia de la eliminacion
 			delete from sal.tmovimiento
             where id_movimiento=v_parametros.id_movimiento;
@@ -127,6 +166,18 @@ BEGIN
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Movimiento eliminado(a)'); 
             v_resp = pxp.f_agrega_clave(v_resp,'id_movimiento',v_parametros.id_movimiento::varchar);
               
+             --funcion aumentada para suma o resta de ventas o compra
+            
+            IF(v_registros.tipo = 'Entrada')THEN
+            	update sal.tproducto set
+                	stock = stock - v_registros.cantidad_movimiento
+                where id_producto = v_registros.id_producto;
+            ELSE
+            	update sal.tproducto set
+                	stock = stock + v_registros.cantidad_movimiento
+                where id_producto = v_registros.id_producto;
+        	END IF;
+            
             --Devuelve la respuesta
             return v_resp;
 
@@ -148,7 +199,3 @@ EXCEPTION
 		raise exception '%',v_resp;
 				        
 END;
-$BODY$
-LANGUAGE 'plpgsql' VOLATILE
-COST 100;
-ALTER FUNCTION "sal"."ft_movimiento_ime"(integer, integer, character varying, character varying) OWNER TO postgres;

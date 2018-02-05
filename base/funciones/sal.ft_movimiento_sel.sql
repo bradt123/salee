@@ -1,7 +1,3 @@
-CREATE OR REPLACE FUNCTION "sal"."ft_movimiento_sel"(	
-				p_administrador integer, p_id_usuario integer, p_tabla character varying, p_transaccion character varying)
-RETURNS character varying AS
-$BODY$
 /**************************************************************************
  SISTEMA:		Salee
  FUNCION: 		sal.ft_movimiento_sel
@@ -52,10 +48,13 @@ BEGIN
 						mov.id_usuario_mod,
 						mov.fecha_mod,
 						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod	
+						usu2.cuenta as usr_mod,
+                        
+                        pro.nombre as desc_producto	
 						from sal.tmovimiento mov
 						inner join segu.tusuario usu1 on usu1.id_usuario = mov.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = mov.id_usuario_mod
+                        left join sal.tproducto pro on pro.id_producto = mov.id_producto
 				        where  ';
 			
 			--Definicion de la respuesta
@@ -107,7 +106,3 @@ EXCEPTION
 			v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
 			raise exception '%',v_resp;
 END;
-$BODY$
-LANGUAGE 'plpgsql' VOLATILE
-COST 100;
-ALTER FUNCTION "sal"."ft_movimiento_sel"(integer, integer, character varying, character varying) OWNER TO postgres;

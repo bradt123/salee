@@ -39,12 +39,19 @@ class ACTProducto extends ACTbase{
 		}
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+
 						
 	function eliminarProducto(){
 			$this->objFunc=$this->create('MODProducto');	
 		$this->res=$this->objFunc->eliminarProducto($this->objParam);
 		$this->res->imprimirRespuesta($this->res->generarJson());
 	}
+	/*aca despues para workflow
+	 * 	function siguenteEstadoSalee(){
+			$this->objFunc=$this->create('MODProducto');	
+		$this->res=$this->objFunc->eliminarProducto($this->objParam);
+		$this->res->imprimirRespuesta($this->res->generarJson());
+	}*/
 			
 }
 

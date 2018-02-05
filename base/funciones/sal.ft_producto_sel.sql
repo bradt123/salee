@@ -1,7 +1,3 @@
-CREATE OR REPLACE FUNCTION "sal"."ft_producto_sel"(	
-				p_administrador integer, p_id_usuario integer, p_tabla character varying, p_transaccion character varying)
-RETURNS character varying AS
-$BODY$
 /**************************************************************************
  SISTEMA:		Salee
  FUNCION: 		sal.ft_producto_sel
@@ -53,10 +49,14 @@ BEGIN
 						pro.id_usuario_mod,
 						pro.fecha_mod,
 						usu1.cuenta as usr_reg,
-						usu2.cuenta as usr_mod	
+						usu2.cuenta as usr_mod,
+                        cat.nombre as desc_categoria,
+                        pro.stock 
+            
 						from sal.tproducto pro
 						inner join segu.tusuario usu1 on usu1.id_usuario = pro.id_usuario_reg
 						left join segu.tusuario usu2 on usu2.id_usuario = pro.id_usuario_mod
+                        left join sal.tcategoria cat on cat.id_categoria = pro.id_categoria
 				        where  ';
 			
 			--Definicion de la respuesta
@@ -108,7 +108,3 @@ EXCEPTION
 			v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
 			raise exception '%',v_resp;
 END;
-$BODY$
-LANGUAGE 'plpgsql' VOLATILE
-COST 100;
-ALTER FUNCTION "sal"."ft_producto_sel"(integer, integer, character varying, character varying) OWNER TO postgres;

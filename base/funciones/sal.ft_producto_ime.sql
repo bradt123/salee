@@ -1,8 +1,3 @@
-CREATE OR REPLACE FUNCTION "sal"."ft_producto_ime" (	
-				p_administrador integer, p_id_usuario integer, p_tabla character varying, p_transaccion character varying)
-RETURNS character varying AS
-$BODY$
-
 /**************************************************************************
  SISTEMA:		Salee
  FUNCION: 		sal.ft_producto_ime
@@ -42,6 +37,8 @@ BEGIN
 	if(p_transaccion='SAL_PRO_INS')then
 					
         begin
+        		--aca ba el codigo 
+    
         	--Sentencia de la insercion
         	insert into sal.tproducto(
 			id_marca,
@@ -54,7 +51,8 @@ BEGIN
 			fecha_reg,
 			usuario_ai,
 			id_usuario_mod,
-			fecha_mod
+			fecha_mod,
+            stock
           	) values(
 			v_parametros.id_marca,
 			v_parametros.descripcion,
@@ -66,7 +64,8 @@ BEGIN
 			now(),
 			v_parametros._nombre_usuario_ai,
 			null,
-			null
+			null,
+            v_parametros.stock
 							
 			
 			
@@ -78,8 +77,11 @@ BEGIN
 
             --Devuelve la respuesta
             return v_resp;
-
+            
+		--agregar el fragmento de codigo encia de select ps_num_tramite
 		end;
+        
+       
 
 	/*********************************    
  	#TRANSACCION:  'SAL_PRO_MOD'
@@ -100,7 +102,8 @@ BEGIN
 			id_usuario_mod = p_id_usuario,
 			fecha_mod = now(),
 			id_usuario_ai = v_parametros._id_usuario_ai,
-			usuario_ai = v_parametros._nombre_usuario_ai
+			usuario_ai = v_parametros._nombre_usuario_ai,
+            stock = v_parametros.stock
 			where id_producto=v_parametros.id_producto;
                
 			--Definicion de la respuesta
@@ -134,6 +137,8 @@ BEGIN
             return v_resp;
 
 		end;
+        
+        --aqui va lo enviado y cambiar la #transaccion por lo del controlador
          
 	else
      
@@ -151,7 +156,3 @@ EXCEPTION
 		raise exception '%',v_resp;
 				        
 END;
-$BODY$
-LANGUAGE 'plpgsql' VOLATILE
-COST 100;
-ALTER FUNCTION "sal"."ft_producto_ime"(integer, integer, character varying, character varying) OWNER TO postgres;

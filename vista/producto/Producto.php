@@ -18,7 +18,14 @@ Phx.vista.Producto=Ext.extend(Phx.gridInterfaz,{
 		Phx.vista.Producto.superclass.constructor.call(this,config);
 		this.init();
 		this.load({params:{start:0, limit:this.tam_pag}})
+		
+		/*copiar this.Button('sig.estado') de skype*/
+		
 	},
+	//sigEstado:funciont() va aqui
+	//preparaMenu:function() para desactivar y activar el menu va aqui depues 
+	//llamada al metodo onSaveWizard  de pues del anterior 
+	//sis_salee/control/Salee/siguienteEstadoSalee
 			
 	Atributos:[
 		{
